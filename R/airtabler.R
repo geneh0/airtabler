@@ -89,14 +89,20 @@ air_get <- function(base, table_name, record_id = NULL,
   )
   air_validate(res)      # throws exception (stop) if error
   ret <- air_parse(res)  # returns R object
+  offset <- attr(ret, 'offset')
   if(combined_result && is.null(record_id)) {
     # combine ID, Fields and CreatedTime in the same data frame:
     ret <-
       cbind(
         id = ret$id, ret$fields, createdTime = ret$createdTime,
-        stringsAsFactors =FALSE
+        stringsAsFactors = FALSE
       )
   }
+  if(!is.null(offset)){
+    ret <- plyr::rbind.fill(ret, air_get(base, table_name, offset = offset)) # adds to a df
+    Sys.sleep(0.5) # to avoid time out/errors
+  }
+
   ret
 }
 
