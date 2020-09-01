@@ -100,7 +100,9 @@ air_get <- function(base, table_name, record_id = NULL,
   }
   if(!is.null(offset)){
     ret <- plyr::rbind.fill(ret, air_get(base, table_name, offset = offset)) # adds to a df
-    Sys.sleep(0.5) # to avoid time out/errors
+            # uses rbind fill in case pages are missing values for a whole column
+            # fills in NA for missing columns
+    Sys.sleep(0.2) # to avoid time out/errors (5 requests/sec)
   }
 
   ret
